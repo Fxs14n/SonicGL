@@ -1,3 +1,4 @@
+try {
 globalThis.console = {};
 
 globalThis.console.startTime = Date.now();
@@ -36,3 +37,5 @@ console.error("test")
 console.warn("test")
  
 console.table("teste")
+}catch(err){
+alert(err);}

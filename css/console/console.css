@@ -1,7 +1,7 @@
 body {
 	margin: 0;
 	overflow: hidden;
-	background: #000;
+	background: white;
 	color: white;
 	font-family: monospace;
 }
@@ -50,4 +50,10 @@ body {
 #console .log {
   color: white;
   text-shadow: 0px 1px 2px black;			
+}
+
+#console .table table,#console .table th,#console .table td  {
+  border: gray thin solid;
+  border-collapse: collapse;
+
 }

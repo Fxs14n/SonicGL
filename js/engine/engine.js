@@ -47,5 +47,90 @@ var sonic_gl_graphics = function(engine, canvas) {
 		return canvas.width / canvas.height;
 	}
 	
+	graphics.shader = function(data, name) {
+		var shader = {}
+		
+		console.log("Compiling vertex shader...");		
+		
+		var vertexShader = graph_lib.createShader(graph_lib.VERTEX_SHADER);
+		graph_lib.shaderSource(vertexShader, shaderData.vertexShader);
+		graph_lib.compileShader(vertexShader);
+	
+		if (!graph_lib.getShaderParameter(vertexShader, graph_lib.COMPILE_STATUS)) {
+			console.error("Error compiling vertex shader: " + graph_lib.getShaderInfoLog(vertexShader));
+		}
+	
+		console.log("Compiling fragment shader...");
+
+		var fragmentShader = graph_lib.createShader(graph_lib.FRAGMENT_SHADER);
+		graph_lib.shaderSource(fragmentShader, shaderData.fragmentShader);
+		graph_lib.compileShader(fragmentShader);
+	
+		if (!graph_lib.getShaderParameter(fragmentShader, graph_lib.COMPILE_STATUS)) {
+			console.error("Error compiling fragment shader: " + graph_lib.getShaderInfoLog(fragmentShader));
+		}
+	
+		console.log("Linking shader program...");
+
+		var program = graph_lib.createProgram();		
+		graph_lib.attachShader(program, fragmentShader);
+		graph_lib.attachShader(program, vertexShader);
+		graph_lib.linkProgram(program);
+		if (!graph_lib.getProgramParameter(program, graph_lib.LINK_STATUS)) {
+			console.error("Error linking shader program: " + graph_lib.getProgramInfoLog(program));
+		}
+
+		console.log("Extracting uniform locations...");
+		
+		var uniforms = {};
+		
+		shaderData.uniforms.forEach(function(uniform){
+			uniforms[uniform] = graph_lib.getUniformLocation(program, uniform);
+			if (!uniforms[uniform]) {
+				console.warn("Nonexistent or unused uniform in the description of shader " + shaderName + ": " + uniform);
+			}
+		});
+	
+		console.log("Extracting attribute locations...");
+		
+		var attributes = {};
+		
+		shaderData.attributes.forEach(function(attribute){
+			attributes[attribute] = graph_lib.getAttribLocation(program, attribute);
+			if (attributes[attribute] == -1) {
+				console.warn("Nonexistent or unused attribute in the description of shader " + shaderName + ": " + attribute);
+			}
+		});
+	
+		shader.use = function() {
+			if (activeShader != shader) {
+				graph_lib.useProgram(program);
+				activeShader = shader;
+			}
+		}
+	
+		shader.uniform = function(name) {
+			if (!uniforms[name])
+				throw new Error("Shader " + shaderName + " has no uniform named " + name);
+			return uniforms[name];
+		}		
+	
+		shader.attribute = function(name) {
+			if (attributes[name] === undefined)
+				throw new Error("Shader " + shaderName + " has no attribute named " + name);			
+			return attributes[name];
+		}
+		
+		shader.hasAttribute = function(name) {
+			return attributes[name] != null;
+		}
+
+		shader.hasUniform = function(name) {
+			return uniforms[name] != null;
+		}
+		
+		return shader;
+	}
+	
 	return graphics;
 };

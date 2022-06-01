@@ -1,6 +1,7 @@
 var sonic_gl = function(canvas) {
   var engine = {};
-  engine.graphics = graphics(engine, canvas);
+  engine.graphics = sonic_gl_graphics(engine, canvas);
+  return engine;
 };
 
 var sonic_gl_graphics = function(engine, canvas) {

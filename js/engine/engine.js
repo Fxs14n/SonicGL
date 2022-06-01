@@ -6,16 +6,19 @@ var sonic_gl = function(canvas) {
 
 var sonic_gl_graphics = function(engine, canvas) {
 	var graphics = {};
-	var graph_lib = null;
 	var graph_lib_params = {};
+	var graph_lib = canvas.getContext("webgl", graph_lib_params) || canvas.getContext("webgl-experimental", graph_lib_params);
 
 	console.log("Initializing WebGl...");
-  
-	if (!(graph_lib = canvas.getContext("webgl", graph_lib_params))) {
-		if (graph_lib = canvas.getContext("experimental-webgl", graph_lib_params)) {
-			console.info("WebGL is running in experimental mode. Performance and stability may suffer.")
-		} else {
-			console.error("Could not initialize WebGL. Are you running a modern browser with WebGL enabled?");
-		}
+	
+	if (graph_lib === null) {
+		console.warn("Unable to initialize WebGL. Your browser or machine may not support it.");
+		return;
 	}
+	
+	graph_lib.enable(graph_lib.DEPTH_TEST);
+	graph_lib.depthFunc(graph_lib.LESS);	
+	graph_lib.clearColor(0.0, 0.0, 0.0, 1.0);
+	graph_lib.enable(graph_lib.BLEND);
+	graph_lib.blendFunc(graph_lib.SRC_ALPHA, graph_lib.ONE_MINUS_SRC_ALPHA);
 };
